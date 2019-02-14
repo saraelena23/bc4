@@ -1,4 +1,3 @@
-
 /* Dependencies */
 var mongoose = require('mongoose'), 
     Listing = require('../models/listings.server.model.js');
@@ -37,25 +36,58 @@ exports.read = function(req, res) {
 };
 
 /* Update a listing */
-exports.update = function(req, res) {
-  var listing = req.listing;
 
-  /** TODO **/
+
+exports.update = function(req, res) {
+var listing = req.listing;
+listing.name=req.body.name;
+listing.code=req.body.code;
+listing.address=req.body.address;
+
+listing.save(function(err, list) {
+		if (err){
+			res.status(404).send(err);
+		}
+		else{
+			res.status(200).send(list);
+		}
+	});
+};
+  /** TODO */
   /* Replace the article's properties with the new properties found in req.body */
   /* Save the article */
-};
 
 /* Delete a listing */
 exports.delete = function(req, res) {
-  var listing = req.listing;
-
-  /** TODO **/
-  /* Remove the article */
+	  var listing = req.listing;
+	  
+	  Listing.remove(listing).exec(function(err, list){
+		if (err){ 
+			res.status(404).send(err);
+			}
+			else{
+				res.status(200).send(list);
+			}
+	});
 };
+
+			
+
+  /** TODO */
+  /* Remove the article */
 
 /* Retreive all the directory listings, sorted alphabetically by listing code */
 exports.list = function(req, res) {
-  /** TODO **/
+	var listing = req.listing;
+	
+	Listing.find().sort('code').exec(function(err, listings) {
+		if (err){
+			res.status(404).send(err);
+		} else{
+			res.json(listings);
+		}
+	});
+  /** TODO */
   /* Your code here */
 };
 
@@ -72,6 +104,7 @@ exports.listingByID = function(req, res, next, id) {
       res.status(400).send(err);
     } else {
       req.listing = listing;
+	  
       next();
     }
   });
